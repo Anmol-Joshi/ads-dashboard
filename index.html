@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Modern Man's Edge — Sales Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&family=Geist+Mono:wght@400;500;600&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0b0a08;
+  --surface: #15130f;
+  --surface2: #1f1c16;
+  --gold: #c9a14a;
+  --gold2: #e8c66e;
+  --gold-dim: #6b5530;
+  --green: #6ec585;
+  --red: #e07a6b;
+  --blue: #7ab0e0;
+  --text: #f0ead8;
+  --muted: #8a8270;
+  --muted2: #5a5447;
+  --border: #2d2920;
+  --border2: #3d3829;
+}
+
+html, body {
+  font-family: 'Geist', sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.5;
+  background-image:
+    radial-gradient(at 20% 0%, rgba(201, 161, 74, 0.08) 0px, transparent 50%),
+    radial-gradient(at 80% 100%, rgba(122, 176, 224, 0.04) 0px, transparent 50%);
+}
+
+body { padding: 24px; max-width: 1400px; margin: 0 auto; }
+
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px; padding-bottom: 18px; border-bottom: 1px solid var(--border);
+  flex-wrap: wrap; gap: 14px;
+}
+
+.brand { display: flex; align-items: center; gap: 14px; }
+
+.mark {
+  width: 44px; height: 44px;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Fraunces', serif; font-weight: 900; color: #0b0a08;
+  font-size: 20px; font-style: italic; border-radius: 4px;
+  box-shadow: 0 6px 20px rgba(201, 161, 74, 0.25);
+}
+
+.title {
+  font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600;
+  color: var(--gold2); letter-spacing: -0.01em; font-style: italic;
+}
+
+.subtitle {
+  font-size: 11px; color: var(--muted); text-transform: uppercase;
+  letter-spacing: 0.18em; margin-top: 2px;
+}
+
+.status-strip { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+.status-pill {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 12px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 100px;
+  font-size: 11px; color: var(--muted);
+}
+
+.dot { width: 6px; height: 6px; border-radius: 50%; }
+.dot.csv { background: var(--blue); box-shadow: 0 0 8px var(--blue); }
+.dot.gold { background: var(--gold2); box-shadow: 0 0 8px var(--gold2); }
+
+.period-strip {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px; gap: 14px; flex-wrap: wrap;
+}
+
+.tabs {
+  display: flex; gap: 2px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 10px; padding: 3px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 500;
+  color: var(--muted); cursor: pointer; border: none; background: transparent;
+  font-family: inherit; letter-spacing: 0.02em; transition: all 0.15s;
+}
+.tab:hover:not(.active) { color: var(--text); }
+.tab.active {
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color: #0b0a08; font-weight: 600;
+}
+
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.btn {
+  padding: 9px 14px; border-radius: 8px; font-family: inherit;
+  font-size: 12px; font-weight: 500; cursor: pointer;
+  border: 1px solid var(--border); background: var(--surface);
+  color: var(--text); transition: all 0.15s;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.btn:hover { border-color: var(--gold-dim); color: var(--gold2); }
+.btn.primary {
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color: #0b0a08; border: none; font-weight: 600;
+}
+.btn.primary:hover { opacity: 0.9; color: #0b0a08; }
+.btn.blue {
+  background: linear-gradient(135deg, #4d80b3, #7ab0e0);
+  color: #0b0a08; border: none; font-weight: 600;
+}
+.btn.blue:hover { opacity: 0.9; color: #0b0a08; }
+
+.metrics, .metrics2 {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 12px; margin-bottom: 12px;
+}
+@media (max-width: 900px) {
+  .metrics, .metrics2 { grid-template-columns: repeat(2, 1fr); }
+}
+
+.stat {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 16px; position: relative; overflow: hidden;
+}
+.stat.hero {
+  background: linear-gradient(135deg, var(--surface) 0%, rgba(201, 161, 74, 0.08) 100%);
+  border-color: var(--gold-dim);
+}
+
+.stat-label {
+  font-size: 10px; color: var(--muted); text-transform: uppercase;
+  letter-spacing: 0.18em; margin-bottom: 10px; font-weight: 500;
+}
+
+.stat-value {
+  font-family: 'Fraunces', serif; font-size: 26px; font-weight: 600;
+  letter-spacing: -0.02em; color: var(--text);
+  display: flex; align-items: baseline; gap: 4px; line-height: 1;
+}
+.stat-value.gold { color: var(--gold2); font-style: italic; }
+.stat-value.green { color: var(--green); }
+.stat-value.red { color: var(--red); }
+.stat-value.blue { color: var(--blue); }
+
+.stat-currency {
+  font-family: 'Geist Mono', monospace; font-size: 13px;
+  font-weight: 400; color: var(--muted); font-style: normal;
+}
+
+.stat-sub { font-size: 11px; color: var(--muted); margin-top: 8px; }
+
+.charts-row {
+  display: grid; grid-template-columns: 1.6fr 1fr;
+  gap: 12px; margin-bottom: 24px;
+}
+@media (max-width: 900px) { .charts-row { grid-template-columns: 1fr; } }
+
+.panel {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px;
+}
+
+.panel-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 18px; flex-wrap: wrap; gap: 8px;
+}
+
+.panel-title {
+  font-family: 'Fraunces', serif; font-size: 16px; font-weight: 600;
+  color: var(--text); letter-spacing: -0.01em;
+}
+
+.panel-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.legend { display: flex; gap: 14px; font-size: 11px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 6px; color: var(--muted); }
+.legend-dot { width: 8px; height: 8px; border-radius: 2px; }
+
+.chart {
+  height: 220px; display: flex; align-items: flex-end;
+  gap: 4px; padding-top: 10px; position: relative;
+}
+.chart::before {
+  content: ''; position: absolute; bottom: 22px; left: 0; right: 0;
+  height: 1px; background: var(--border);
+}
+
+.bar-group {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  gap: 4px; height: 100%; justify-content: flex-end; position: relative; cursor: pointer;
+}
+
+.bar-stack {
+  width: 80%; display: flex; flex-direction: row; gap: 2px;
+  align-items: flex-end; height: calc(100% - 22px); position: relative;
+}
+
+.bar { width: 100%; border-radius: 2px 2px 0 0; transition: opacity 0.2s; }
+.bar.revenue { background: linear-gradient(180deg, var(--gold2), var(--gold)); }
+.bar.profit { background: linear-gradient(180deg, var(--green), #4ea568); }
+.bar.spend { background: linear-gradient(180deg, var(--blue), #4d80b3); opacity: 0.85; }
+.bar-group:hover .bar { opacity: 0.85; }
+
+.bar-label {
+  font-size: 10px; color: var(--muted); font-family: 'Geist Mono', monospace;
+  height: 18px; display: flex; align-items: center; white-space: nowrap;
+}
+
+.bar-tooltip {
+  position: absolute; bottom: 100%; left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: #000; border: 1px solid var(--gold-dim);
+  border-radius: 8px; padding: 8px 12px; font-size: 11px;
+  white-space: nowrap; pointer-events: none; opacity: 0;
+  transition: opacity 0.15s; z-index: 10; font-family: 'Geist Mono', monospace;
+}
+.bar-group:hover .bar-tooltip { opacity: 1; }
+.tooltip-row { display: flex; justify-content: space-between; gap: 12px; }
+.tooltip-label { color: var(--muted); }
+
+.donut-wrap {
+  display: flex; flex-direction: column; align-items: center;
+  height: 220px; justify-content: space-around;
+}
+.donut { position: relative; width: 130px; height: 130px; }
+.donut svg { transform: rotate(-90deg); }
+
+.donut-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.donut-center-val {
+  font-family: 'Fraunces', serif; font-size: 22px; color: var(--gold2);
+  font-style: italic; font-weight: 600; line-height: 1;
+}
+.donut-center-label {
+  font-size: 9px; color: var(--muted); text-transform: uppercase;
+  letter-spacing: 0.15em; margin-top: 4px;
+}
+.donut-legend { display: flex; flex-direction: column; gap: 6px; width: 100%; font-size: 11px; }
+.donut-legend-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.donut-legend-left { display: flex; align-items: center; gap: 8px; color: var(--muted); }
+.donut-legend-val { font-family: 'Geist Mono', monospace; color: var(--text); font-size: 11px; }
+
+.table-section {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; overflow: hidden; margin-bottom: 14px;
+}
+
+.table-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  flex-wrap: wrap; gap: 12px;
+}
+
+.section-tabs {
+  display: flex; gap: 2px; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 8px; padding: 2px;
+}
+.section-tab {
+  padding: 6px 12px; border-radius: 6px; font-size: 11px;
+  cursor: pointer; border: none; background: transparent;
+  color: var(--muted); font-family: inherit; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.section-tab.active { background: var(--gold-dim); color: var(--gold2); }
+
+.table-wrap { max-height: 380px; overflow-y: auto; }
+.tbl { width: 100%; border-collapse: collapse; }
+
+.tbl th {
+  position: sticky; top: 0; background: var(--surface2);
+  text-align: left; padding: 10px 20px; font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.15em;
+  color: var(--muted); font-weight: 500;
+  border-bottom: 1px solid var(--border); z-index: 5;
+}
+
+.tbl td {
+  padding: 11px 20px; font-size: 13px;
+  border-bottom: 1px solid rgba(45, 41, 32, 0.5);
+  font-family: 'Geist Mono', monospace;
+}
+.tbl tr:last-child td { border-bottom: none; }
+.tbl tr:hover td { background: var(--surface2); }
+
+.source-tag {
+  display: inline-block; padding: 2px 8px; border-radius: 100px;
+  font-size: 10px; font-family: 'Geist', sans-serif; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.source-tag.meta { background: rgba(122, 176, 224, 0.15); color: var(--blue); }
+.source-tag.organic { background: rgba(110, 197, 133, 0.15); color: var(--green); }
+.source-tag.other { background: rgba(180, 160, 120, 0.15); color: #d4b88a; }
+
+.icon-btn {
+  background: transparent; border: none; color: var(--muted);
+  cursor: pointer; padding: 4px; border-radius: 4px;
+  transition: all 0.15s; font-size: 14px;
+}
+.icon-btn:hover { color: var(--red); background: rgba(224, 122, 107, 0.1); }
+
+.empty { padding: 56px 22px; text-align: center; color: var(--muted); }
+.empty-icon { font-size: 32px; margin-bottom: 12px; opacity: 0.4; }
+.empty-title {
+  font-family: 'Fraunces', serif; font-size: 16px; font-weight: 600;
+  color: var(--text); margin-bottom: 6px; font-style: italic;
+}
+
+.modal-bg {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(6px);
+  display: none; align-items: center; justify-content: center;
+  z-index: 100; padding: 20px;
+}
+.modal-bg.show { display: flex; }
+
+.modal {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 16px; padding: 28px;
+  width: 540px; max-width: 100%; max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+
+.modal-title {
+  font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600;
+  color: var(--gold2); font-style: italic; margin-bottom: 6px;
+}
+
+.modal-sub { font-size: 12px; color: var(--muted); margin-bottom: 18px; }
+
+.form-group { margin-bottom: 14px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.lbl {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em;
+  color: var(--muted); margin-bottom: 6px; display: block; font-weight: 500;
+}
+
+.inp, .sel, .ta {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text); padding: 10px 12px; border-radius: 8px;
+  font-family: inherit; font-size: 13px; outline: none;
+  transition: border-color 0.15s;
+}
+.inp:focus, .sel:focus, .ta:focus { border-color: var(--gold-dim); }
+.ta {
+  font-family: 'Geist Mono', monospace; font-size: 12px;
+  resize: vertical; min-height: 110px;
+}
+
+.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+.modal-actions .btn { flex: 1; justify-content: center; }
+.modal-actions .btn.primary, .modal-actions .btn.blue { flex: 1.5; }
+
+.info-strip {
+  background: rgba(122, 176, 224, 0.06);
+  border: 1px solid rgba(122, 176, 224, 0.2);
+  border-radius: 10px; padding: 12px 14px;
+  font-size: 12px; color: var(--muted);
+  margin-bottom: 14px; line-height: 1.55;
+}
+.info-strip b { color: var(--blue); }
+.info-strip code {
+  background: rgba(122, 176, 224, 0.1); padding: 1px 5px;
+  border-radius: 3px; font-family: 'Geist Mono', monospace; font-size: 11px;
+}
+
+.warn-strip {
+  background: rgba(201, 161, 74, 0.06);
+  border: 1px solid rgba(201, 161, 74, 0.25);
+  border-radius: 10px; padding: 12px 14px;
+  font-size: 12px; color: var(--muted);
+  margin-bottom: 16px; line-height: 1.55;
+}
+.warn-strip b { color: var(--gold2); }
+
+.modal-tabs {
+  display: flex; gap: 2px; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 2px; margin-bottom: 18px; flex-wrap: wrap;
+}
+.modal-tab {
+  flex: 1; padding: 8px 12px; border-radius: 6px; min-width: 80px;
+  border: none; background: transparent; cursor: pointer;
+  color: var(--muted); font-family: inherit; font-size: 12px; font-weight: 500;
+}
+.modal-tab.active { background: var(--gold-dim); color: var(--gold2); }
+
+.footer {
+  text-align: center; font-size: 10px; color: var(--muted2);
+  margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border);
+  letter-spacing: 0.12em; text-transform: uppercase;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold-dim); }
+
+.loading { text-align: center; padding: 40px; color: var(--muted); }
+
+@media print {
+  body { background: white !important; color: black !important; }
+  .actions, .icon-btn, .modal-bg, .footer { display: none !important; }
+  .panel, .stat, .table-section { background: white !important; border-color: #ccc !important; box-shadow: none !important; }
+  .stat-value, .panel-title, .title { color: #333 !important; }
+  .stat-value.gold { color: #c9a14a !important; }
+  .stat-value.green { color: #2d8a4a !important; }
+  .stat-value.blue { color: #2a6090 !important; }
+}
+</style>
+</head>
+<body>
+
+<div id="app"><div class="loading">Loading dashboard…</div></div>
+
+<script>
+(function() {
+  const app = document.getElementById('app');
+  const STATE = {
+    sales: [], spend: [],
+    settings: { price: 999, feePercent: 5, brand: "The Modern Man's Edge" },
+    period: '30d', section: 'sales'
+  };
+
+  const KEY = 'tmeDashboard_v1';
+
+  // ---------- Storage ----------
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed.sales) STATE.sales = parsed.sales;
+        if (parsed.spend) STATE.spend = parsed.spend;
+        if (parsed.settings) STATE.settings = { ...STATE.settings, ...parsed.settings };
+      }
+    } catch(e) { console.warn('Load failed', e); }
+  }
+  function save() {
+    try {
+      localStorage.setItem(KEY, JSON.stringify({
+        sales: STATE.sales, spend: STATE.spend, settings: STATE.settings
+      }));
+    } catch(e) { console.warn('Save failed', e); }
+  }
+
+  // ---------- Helpers ----------
+  const fmt = (n) => '₹' + Math.round(n).toLocaleString('en-IN');
+  const fmtShort = (n) => {
+    const abs = Math.abs(n);
+    if (abs >= 100000) return '₹' + (n/100000).toFixed(1) + 'L';
+    if (abs >= 1000) return '₹' + (n/1000).toFixed(1) + 'K';
+    return '₹' + Math.round(n);
+  };
+  const fmtDate = (d) => new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: '2-digit' });
+  const todayISO = () => new Date().toISOString().slice(0,10);
+  const uid = (p) => p + '_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
+  const escapeHtml = (s) => String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  // ---------- Aggregation ----------
+  function periodRange(p) {
+    const end = new Date(); end.setHours(23,59,59,999);
+    const start = new Date(); start.setHours(0,0,0,0);
+    if (p === '7d') start.setDate(start.getDate() - 6);
+    else if (p === '30d') start.setDate(start.getDate() - 29);
+    else if (p === 'mtd') start.setDate(1);
+    else if (p === 'ytd') { start.setMonth(0); start.setDate(1); }
+    else if (p === 'all') start.setFullYear(2000);
+    return { start, end };
+  }
+  function inPeriod(dateStr, p) {
+    const { start, end } = periodRange(p);
+    const d = new Date(dateStr);
+    return d >= start && d <= end;
+  }
+
+  function aggregate(p) {
+    const sales = STATE.sales.filter(s => inPeriod(s.date, p));
+    const spend = STATE.spend.filter(s => inPeriod(s.date, p));
+    const totalQty = sales.reduce((a,s) => a + (s.qty||0), 0);
+    const revenue = sales.reduce((a,s) => a + (s.qty||0) * (s.price||STATE.settings.price), 0);
+    const adSpend = spend.reduce((a,s) => a + (s.amount||0), 0);
+    const fees = revenue * (STATE.settings.feePercent / 100);
+    const profit = revenue - adSpend - fees;
+    const roas = adSpend > 0 ? revenue / adSpend : 0;
+    const avgOrder = totalQty > 0 ? revenue / totalQty : 0;
+    const cps = totalQty > 0 ? adSpend / totalQty : 0;
+    const margin = revenue > 0 ? profit / revenue : 0;
+    return { totalQty, revenue, adSpend, fees, profit, roas, avgOrder, cps, margin };
+  }
+
+  function bySource(p) {
+    const sales = STATE.sales.filter(s => inPeriod(s.date, p));
+    const out = { meta: 0, organic: 0, other: 0 };
+    sales.forEach(s => {
+      const rev = (s.qty||0) * (s.price||STATE.settings.price);
+      out[s.source || 'other'] = (out[s.source || 'other'] || 0) + rev;
+    });
+    return out;
+  }
+
+  function dailyBuckets(p) {
+    const { start, end } = periodRange(p);
+    const days = Math.ceil((end - start) / 86400000) + 1;
+    let bucketSize = 'day', numBuckets = days;
+    if (p === 'ytd' || days > 60) { bucketSize = 'month'; numBuckets = 12; }
+    else if (days > 14) { bucketSize = 'week'; numBuckets = Math.ceil(days/7); }
+
+    const buckets = [];
+    if (bucketSize === 'day') {
+      for (let i = 0; i < numBuckets; i++) {
+        const d = new Date(start); d.setDate(d.getDate() + i);
+        buckets.push({
+          key: d.toISOString().slice(0,10),
+          label: d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }),
+          revenue: 0, spend: 0, profit: 0, qty: 0
+        });
+      }
+    } else if (bucketSize === 'week') {
+      for (let i = 0; i < numBuckets; i++) {
+        const d = new Date(start); d.setDate(d.getDate() + i*7);
+        buckets.push({
+          key: 'w' + i,
+          label: d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }),
+          revenue: 0, spend: 0, profit: 0, qty: 0
+        });
+      }
+    } else {
+      for (let m = 0; m < 12; m++) {
+        const d = new Date(); d.setMonth(m); d.setDate(1);
+        buckets.push({
+          key: 'm'+m, month: m,
+          label: d.toLocaleDateString('en-IN', { month: 'short' }),
+          revenue: 0, spend: 0, profit: 0, qty: 0
+        });
+      }
+    }
+
+    const placeInBucket = (dateStr) => {
+      const sd = new Date(dateStr);
+      if (bucketSize === 'day') return buckets.find(b => b.key === sd.toISOString().slice(0,10));
+      if (bucketSize === 'week') {
+        const idx = Math.floor((sd - start) / (7 * 86400000));
+        return buckets[idx];
+      }
+      return buckets[sd.getMonth()];
+    };
+
+    STATE.sales.filter(s => inPeriod(s.date, p)).forEach(s => {
+      const b = placeInBucket(s.date);
+      if (b) {
+        const rev = (s.qty||0) * (s.price || STATE.settings.price);
+        b.revenue += rev; b.qty += s.qty||0;
+      }
+    });
+    STATE.spend.filter(s => inPeriod(s.date, p)).forEach(s => {
+      const b = placeInBucket(s.date);
+      if (b) b.spend += s.amount||0;
+    });
+    buckets.forEach(b => { b.profit = b.revenue - b.spend - (b.revenue * STATE.settings.feePercent / 100); });
+    return buckets;
+  }
+
+  // ---------- CSV parsing ----------
+  function parseCsvLine(line) {
+    const result = [];
+    let cur = '', inQ = false;
+    for (const c of line) {
+      if (c === '"') inQ = !inQ;
+      else if (c === ',' && !inQ) { result.push(cur); cur = ''; }
+      else cur += c;
+    }
+    result.push(cur);
+    return result.map(s => s.replace(/^"|"$/g, '').trim());
+  }
+  function parseDateFlex(s) {
+    if (!s) return null;
+    if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0,10);
+    const d = new Date(s);
+    if (!isNaN(d.getTime())) return d.toISOString().slice(0,10);
+    return null;
+  }
+  function parseMetaCsv(text) {
+    const lines = text.split('\n').map(l => l.replace(/\r$/, '')).filter(l => l.trim());
+    if (lines.length < 2) return { error: 'Need at least a header row and one data row.' };
+    const headers = parseCsvLine(lines[0]).map(h => h.toLowerCase().trim());
+    const dateIdx = headers.findIndex(h => /^day$|^date$|reporting.?start/i.test(h));
+    const spendIdx = headers.findIndex(h => /amount.?spent|^spend$|^spent$/i.test(h));
+    const campaignIdx = headers.findIndex(h => /campaign.?name|^campaign$/i.test(h));
+    if (dateIdx === -1 || spendIdx === -1) {
+      return { error: 'Could not find Date and Amount Spent columns. Found headers: ' + headers.slice(0,8).join(', ') };
+    }
+    const byDate = {};
+    let skipped = 0;
+    lines.slice(1).forEach(line => {
+      const cells = parseCsvLine(line);
+      if (cells.length <= Math.max(dateIdx, spendIdx)) { skipped++; return; }
+      const dateRaw = cells[dateIdx];
+      const spendRaw = (cells[spendIdx] || '').replace(/[^\d.-]/g, '');
+      const spend = parseFloat(spendRaw);
+      const date = parseDateFlex(dateRaw);
+      if (!date || isNaN(spend) || spend < 0) { skipped++; return; }
+      if (!byDate[date]) byDate[date] = { date, amount: 0, campaign: campaignIdx >= 0 ? (cells[campaignIdx] || '') : '' };
+      byDate[date].amount += spend;
+    });
+    return { rows: Object.values(byDate), skipped };
+  }
+  function parseSalesCsv(text) {
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'));
+    const out = []; let skipped = 0;
+    lines.forEach(line => {
+      const parts = parseCsvLine(line);
+      if (parts.length < 2) { skipped++; return; }
+      const date = parseDateFlex(parts[0]);
+      if (!date) { skipped++; return; }
+      const qty = parseInt(parts[1]) || 1;
+      const price = parseFloat(parts[2]) || STATE.settings.price;
+      const source = ['meta','organic','other'].includes((parts[3]||'').toLowerCase()) ? parts[3].toLowerCase() : 'other';
+      const note = parts.slice(4).join(', ') || '';
+      out.push({ id: uid('s'), date, qty, price, source, note });
+    });
+    return { rows: out, skipped };
+  }
+
+  // ---------- CSV / Excel export ----------
+  function csvEscape(val) {
+    if (val == null) return '';
+    const s = String(val);
+    if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  }
+
+  function downloadCSV(rows, filename) {
+    // BOM ensures Excel detects UTF-8 (rupee sign, accents)
+    const csv = '\uFEFF' + rows.map(r => r.map(csvEscape).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function exportSalesCsv() {
+    const headers = ['Date', 'Source', 'Quantity', 'Price (INR)', 'Revenue (INR)', 'Note'];
+    const rows = STATE.sales
+      .slice()
+      .sort((a,b) => new Date(a.date) - new Date(b.date))
+      .map(s => {
+        const price = s.price || STATE.settings.price;
+        return [s.date, s.source || 'other', s.qty || 0, price, (s.qty || 0) * price, s.note || ''];
+      });
+    downloadCSV([headers, ...rows], `sales-${todayISO()}.csv`);
+  }
+
+  function exportSpendCsv() {
+    const headers = ['Date', 'Platform', 'Amount (INR)', 'Campaign'];
+    const rows = STATE.spend
+      .slice()
+      .sort((a,b) => new Date(a.date) - new Date(b.date))
+      .map(s => [s.date, s.platform || 'meta', s.amount || 0, s.campaign || '']);
+    downloadCSV([headers, ...rows], `ad-spend-${todayISO()}.csv`);
+  }
+
+  function dailySummaryRows() {
+    const byDate = {};
+    STATE.sales.forEach(s => {
+      const rev = (s.qty||0) * (s.price || STATE.settings.price);
+      if (!byDate[s.date]) byDate[s.date] = { date: s.date, revenue: 0, spend: 0, qty: 0 };
+      byDate[s.date].revenue += rev;
+      byDate[s.date].qty += s.qty || 0;
+    });
+    STATE.spend.forEach(s => {
+      if (!byDate[s.date]) byDate[s.date] = { date: s.date, revenue: 0, spend: 0, qty: 0 };
+      byDate[s.date].spend += s.amount || 0;
+    });
+    const fee = STATE.settings.feePercent / 100;
+    return Object.values(byDate)
+      .sort((a,b) => new Date(a.date) - new Date(b.date))
+      .map(d => {
+        const fees = d.revenue * fee;
+        const profit = d.revenue - d.spend - fees;
+        const roas = d.spend > 0 ? d.revenue / d.spend : 0;
+        return [d.date, d.qty, d.revenue, d.spend, fees, profit, roas.toFixed(2)];
+      });
+  }
+
+  function exportSummaryCsv() {
+    const headers = ['Date', 'Copies Sold', 'Revenue (INR)', 'Ad Spend (INR)', 'Platform Fees (INR)', 'Net Profit (INR)', 'ROAS'];
+    downloadCSV([headers, ...dailySummaryRows()], `daily-summary-${todayISO()}.csv`);
+  }
+
+  function loadSheetJS() {
+    return new Promise((resolve, reject) => {
+      if (window.XLSX) return resolve(window.XLSX);
+      const s = document.createElement('script');
+      s.src = 'https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js';
+      s.onload = () => resolve(window.XLSX);
+      s.onerror = () => reject(new Error('Failed to load Excel library'));
+      document.head.appendChild(s);
+    });
+  }
+
+  async function exportExcel() {
+    let XLSX;
+    try { XLSX = await loadSheetJS(); }
+    catch(e) { alert('Could not load the Excel library. Check internet, or use CSV export instead.'); return; }
+
+    const wb = XLSX.utils.book_new();
+
+    // Sheet 1: Daily Summary (most useful first)
+    const summaryHeader = ['Date', 'Copies Sold', 'Revenue (INR)', 'Ad Spend (INR)', 'Platform Fees (INR)', 'Net Profit (INR)', 'ROAS'];
+    const ws1 = XLSX.utils.aoa_to_sheet([summaryHeader, ...dailySummaryRows()]);
+    XLSX.utils.book_append_sheet(wb, ws1, 'Daily Summary');
+
+    // Sheet 2: Sales Ledger
+    const salesData = [
+      ['Date', 'Source', 'Quantity', 'Price (INR)', 'Revenue (INR)', 'Note'],
+      ...STATE.sales.slice().sort((a,b) => new Date(a.date) - new Date(b.date)).map(s => {
+        const price = s.price || STATE.settings.price;
+        return [s.date, s.source || 'other', s.qty || 0, price, (s.qty || 0) * price, s.note || ''];
+      })
+    ];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(salesData), 'Sales');
+
+    // Sheet 3: Ad Spend Ledger
+    const spendData = [
+      ['Date', 'Platform', 'Amount (INR)', 'Campaign'],
+      ...STATE.spend.slice().sort((a,b) => new Date(a.date) - new Date(b.date)).map(s => [s.date, s.platform || 'meta', s.amount || 0, s.campaign || ''])
+    ];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(spendData), 'Ad Spend');
+
+    // Sheet 4: Snapshot
+    const totalRev = STATE.sales.reduce((a,s) => a + (s.qty||0) * (s.price||STATE.settings.price), 0);
+    const totalSpend = STATE.spend.reduce((a,s) => a + (s.amount||0), 0);
+    const fees = totalRev * STATE.settings.feePercent / 100;
+    const profit = totalRev - totalSpend - fees;
+    const snap = [
+      ['Brand', STATE.settings.brand],
+      ['Exported At', new Date().toLocaleString('en-IN')],
+      ['Default Price (INR)', STATE.settings.price],
+      ['Platform Fee (%)', STATE.settings.feePercent],
+      [],
+      ['LIFETIME TOTALS', ''],
+      ['Copies Sold', STATE.sales.reduce((a,s) => a + (s.qty||0), 0)],
+      ['Gross Revenue (INR)', totalRev],
+      ['Ad Spend (INR)', totalSpend],
+      ['Platform Fees (INR)', fees],
+      ['Net Profit (INR)', profit],
+      ['ROAS', totalSpend > 0 ? (totalRev/totalSpend).toFixed(2) : 'N/A'],
+      ['Profit Margin (%)', totalRev > 0 ? Math.round(profit/totalRev*100) : 0]
+    ];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(snap), 'Snapshot');
+
+    XLSX.writeFile(wb, `dashboard-${todayISO()}.xlsx`);
+  }
+
+  // ---------- URL-based sharing ----------
+  function encodeShareUrl() {
+    const data = JSON.stringify({
+      v: 1,
+      s: STATE.sales,
+      p: STATE.spend,
+      c: STATE.settings
+    });
+    // Base64-encode UTF-8 safely
+    const b64 = btoa(unescape(encodeURIComponent(data)));
+    return location.origin + location.pathname + '#data=' + b64;
+  }
+
+  function decodeShareHash(hash, key) {
+    try {
+      const m = hash.match(new RegExp('^#' + key + '=(.+)$'));
+      if (!m) return null;
+      const json = decodeURIComponent(escape(atob(m[1])));
+      return JSON.parse(json);
+    } catch(e) { return null; }
+  }
+
+  function mergeIncoming(data) {
+    const incomingSales = data.sales || data.s || [];
+    const incomingSpend = data.spend || data.p || [];
+    let salesAdded = 0, spendAddedOrReplaced = 0;
+
+    incomingSales.forEach(s => {
+      if (!s || !s.date) return;
+      STATE.sales.push({
+        id: s.id || uid('s'),
+        date: s.date,
+        qty: s.qty || 1,
+        price: s.price || STATE.settings.price,
+        source: s.source || 'meta',
+        note: s.note || ''
+      });
+      salesAdded++;
+    });
+
+    incomingSpend.forEach(s => {
+      if (!s || !s.date) return;
+      const platform = s.platform || 'meta';
+      // Dedup by date+platform: incoming wins (Claude's pull is the source of truth for that day)
+      const existing = STATE.spend.findIndex(e => e.date === s.date && (e.platform || 'meta') === platform);
+      const rec = {
+        id: s.id || uid('sp'),
+        date: s.date,
+        amount: parseFloat(s.amount) || 0,
+        platform: platform,
+        campaign: s.campaign || ''
+      };
+      if (existing >= 0) STATE.spend[existing] = rec;
+      else STATE.spend.push(rec);
+      spendAddedOrReplaced++;
+    });
+
+    return { salesAdded, spendAddedOrReplaced };
+  }
+
+  function checkUrlHash() {
+    // Full-replace mode (#data=)
+    let data = decodeShareHash(location.hash, 'data');
+    if (data) {
+      const summary = `Shared dashboard URL:\n• ${(data.s||[]).length} sales\n• ${(data.p||[]).length} spend records\n\nREPLACE your current data?\n(Cancel to keep what you have.)`;
+      if (confirm(summary)) {
+        STATE.sales = Array.isArray(data.s) ? data.s : [];
+        STATE.spend = Array.isArray(data.p) ? data.p : [];
+        if (data.c) STATE.settings = { ...STATE.settings, ...data.c };
+        save();
+        history.replaceState(null, '', location.pathname);
+      }
+      return;
+    }
+    // Additive merge mode (#merge=)
+    data = decodeShareHash(location.hash, 'merge');
+    if (data) {
+      const sCount = (data.sales || data.s || []).length;
+      const pCount = (data.spend || data.p || []).length;
+      const summary = `Incoming data from Claude / shared link:\n• ${sCount} sales to add\n• ${pCount} spend records to add or update\n\nMERGE into your existing dashboard?\n(Spend records that share a date with existing entries will be replaced. Sales records will be appended.)`;
+      if (confirm(summary)) {
+        const result = mergeIncoming(data);
+        save();
+        history.replaceState(null, '', location.pathname);
+        setTimeout(() => alert(`Merged ${result.salesAdded} sales and ${result.spendAddedOrReplaced} spend records.`), 100);
+      }
+    }
+  }
+
+  // ---------- Render ----------
+  function render() {
+    const agg = aggregate(STATE.period);
+    const sources = bySource(STATE.period);
+    const buckets = dailyBuckets(STATE.period);
+
+    const periodLabels = {
+      today: 'Today', '7d': 'Last 7 Days', '30d': 'Last 30 Days',
+      mtd: 'Month to Date', ytd: 'Year to Date', all: 'All Time'
+    };
+
+    app.innerHTML = `
+      <div class="header">
+        <div class="brand">
+          <div class="mark">${(STATE.settings.brand || 'M').charAt(0).toUpperCase()}</div>
+          <div>
+            <div class="title">${escapeHtml(STATE.settings.brand)}</div>
+            <div class="subtitle">Sales · Profit · Performance</div>
+          </div>
+        </div>
+        <div class="status-strip">
+          <div class="status-pill"><span class="dot csv"></span>Local Storage</div>
+          <div class="status-pill"><span class="dot gold"></span>${STATE.sales.length} sales · ${STATE.spend.length} spend</div>
+        </div>
+      </div>
+
+      <div class="period-strip">
+        <div class="tabs">
+          ${['today','7d','30d','mtd','ytd','all'].map(p =>
+            `<button class="tab ${STATE.period===p?'active':''}" data-period="${p}">${periodLabels[p]}</button>`
+          ).join('')}
+        </div>
+        <div class="actions">
+          <button class="btn" id="btnShare">⇪ Share</button>
+          <button class="btn" id="btnImport">⇣ Import</button>
+          <button class="btn" id="btnSettings">⚙</button>
+          <button class="btn blue" id="btnAddSpend">+ Spend</button>
+          <button class="btn primary" id="btnAddSale">+ Sale</button>
+        </div>
+      </div>
+
+      <div class="metrics">
+        <div class="stat hero">
+          <div class="stat-label">Net Profit</div>
+          <div class="stat-value gold">${fmt(agg.profit)}</div>
+          <div class="stat-sub">After ad spend & ${STATE.settings.feePercent}% fees</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Gross Revenue</div>
+          <div class="stat-value">${fmt(agg.revenue)}</div>
+          <div class="stat-sub">${agg.totalQty} ${agg.totalQty === 1 ? 'copy' : 'copies'} sold</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Ad Spend</div>
+          <div class="stat-value blue">${fmt(agg.adSpend)}</div>
+          <div class="stat-sub">${agg.totalQty>0 ? 'CPS '+fmt(agg.cps) : 'No conversions'}</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">ROAS</div>
+          <div class="stat-value ${agg.roas >= 2 ? 'green' : agg.roas >= 1 ? 'gold' : agg.roas > 0 ? 'red' : ''}">${agg.roas.toFixed(2)}<span class="stat-currency">×</span></div>
+          <div class="stat-sub">${agg.roas >= 2 ? 'Profitable' : agg.roas >= 1 ? 'Break-even' : agg.roas > 0 ? 'Losing money' : 'No ad data'}</div>
+        </div>
+      </div>
+
+      <div class="metrics2">
+        <div class="stat">
+          <div class="stat-label">Copies Sold</div>
+          <div class="stat-value">${agg.totalQty}</div>
+          <div class="stat-sub">${periodLabels[STATE.period]}</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Avg Order Value</div>
+          <div class="stat-value">${fmt(agg.avgOrder)}</div>
+          <div class="stat-sub">Listed at ${fmt(STATE.settings.price)}</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Platform Fees</div>
+          <div class="stat-value" style="color:#d4b88a">${fmt(agg.fees)}</div>
+          <div class="stat-sub">${STATE.settings.feePercent}% of revenue</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Profit Margin</div>
+          <div class="stat-value ${agg.margin >= 0.3 ? 'green' : agg.margin > 0 ? 'gold' : agg.revenue > 0 ? 'red' : ''}">${agg.revenue > 0 ? Math.round(agg.margin*100) : 0}<span class="stat-currency">%</span></div>
+          <div class="stat-sub">Of gross revenue</div>
+        </div>
+      </div>
+
+      <div class="charts-row">
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Revenue · Spend · Profit</div>
+              <div class="panel-sub">${periodLabels[STATE.period]} — ${buckets[0]?.label || ''} → ${buckets[buckets.length-1]?.label || ''}</div>
+            </div>
+            <div class="legend">
+              <div class="legend-item"><span class="legend-dot" style="background:var(--gold2)"></span>Revenue</div>
+              <div class="legend-item"><span class="legend-dot" style="background:var(--blue)"></span>Spend</div>
+              <div class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>Profit</div>
+            </div>
+          </div>
+          ${renderChart(buckets)}
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Source Mix</div>
+              <div class="panel-sub">Revenue by acquisition channel</div>
+            </div>
+          </div>
+          ${renderDonut(sources, agg.revenue)}
+        </div>
+      </div>
+
+      <div class="table-section">
+        <div class="table-head">
+          <div>
+            <div class="panel-title">${STATE.section === 'sales' ? 'Sales Ledger' : 'Ad Spend Ledger'}</div>
+            <div class="panel-sub">${(STATE.section === 'sales' ? STATE.sales : STATE.spend).filter(r => inPeriod(r.date, STATE.period)).length} entries · ${periodLabels[STATE.period]}</div>
+          </div>
+          <div class="section-tabs">
+            <button class="section-tab ${STATE.section==='sales'?'active':''}" data-section="sales">Sales</button>
+            <button class="section-tab ${STATE.section==='spend'?'active':''}" data-section="spend">Spend</button>
+          </div>
+        </div>
+        ${STATE.section === 'sales' ? renderSalesTable() : renderSpendTable()}
+      </div>
+
+      <div class="footer">
+        Data stored in your browser · Use Share to export a backup or send to others · ${new Date().toLocaleDateString('en-IN')}
+      </div>
+
+      <div class="modal-bg" id="modalBg"></div>
+    `;
+    attachListeners();
+  }
+
+  function renderChart(buckets) {
+    if (buckets.length === 0 || buckets.every(b => b.revenue === 0 && b.spend === 0)) {
+      return '<div class="empty" style="height:220px"><div class="empty-icon">📊</div><div class="empty-title">No data yet</div><div>Add a sale or import Meta CSV to populate the chart</div></div>';
+    }
+    const maxVal = Math.max(...buckets.map(b => Math.max(b.revenue, b.spend, b.profit, 1)));
+    return `<div class="chart">${buckets.map(b => {
+      const rh = b.revenue > 0 ? (b.revenue/maxVal)*100 : 0;
+      const sh = b.spend > 0 ? (b.spend/maxVal)*100 : 0;
+      const ph = b.profit > 0 ? (b.profit/maxVal)*100 : 0;
+      return `
+        <div class="bar-group">
+          <div class="bar-tooltip">
+            <div class="tooltip-row"><span class="tooltip-label">When</span><span>${b.label}</span></div>
+            <div class="tooltip-row"><span class="tooltip-label">Revenue</span><span style="color:var(--gold2)">${fmtShort(b.revenue)}</span></div>
+            <div class="tooltip-row"><span class="tooltip-label">Spend</span><span style="color:var(--blue)">${fmtShort(b.spend)}</span></div>
+            <div class="tooltip-row"><span class="tooltip-label">Profit</span><span style="color:${b.profit>=0?'var(--green)':'var(--red)'}">${fmtShort(b.profit)}</span></div>
+            <div class="tooltip-row"><span class="tooltip-label">Copies</span><span>${b.qty}</span></div>
+          </div>
+          <div class="bar-stack">
+            <div class="bar revenue" style="height:${rh}%;width:33%"></div>
+            <div class="bar spend" style="height:${sh}%;width:33%"></div>
+            <div class="bar profit" style="height:${ph}%;width:33%"></div>
+          </div>
+          <div class="bar-label">${b.label}</div>
+        </div>`;
+    }).join('')}</div>`;
+  }
+
+  function renderDonut(sources, total) {
+    if (total === 0) return '<div class="empty" style="height:220px"><div class="empty-icon">○</div><div>No sales in this period</div></div>';
+    const data = [
+      { key: 'meta', label: 'Meta Ads', value: sources.meta || 0, color: '#7ab0e0' },
+      { key: 'organic', label: 'Organic', value: sources.organic || 0, color: '#6ec585' },
+      { key: 'other', label: 'Other', value: sources.other || 0, color: '#d4b88a' }
+    ].filter(d => d.value > 0);
+    const r = 50, c = 2 * Math.PI * r;
+    let offset = 0;
+    const segs = data.map(d => {
+      const len = c * (d.value / total);
+      const dasharray = `${len} ${c - len}`;
+      const seg = `<circle cx="65" cy="65" r="${r}" fill="none" stroke="${d.color}" stroke-width="14" stroke-dasharray="${dasharray}" stroke-dashoffset="${-offset}" />`;
+      offset += len;
+      return seg;
+    }).join('');
+    return `
+      <div class="donut-wrap">
+        <div class="donut">
+          <svg width="130" height="130" viewBox="0 0 130 130">
+            <circle cx="65" cy="65" r="50" fill="none" stroke="#2a261d" stroke-width="14" />
+            ${segs}
+          </svg>
+          <div class="donut-center">
+            <div class="donut-center-val">${fmtShort(total)}</div>
+            <div class="donut-center-label">Total</div>
+          </div>
+        </div>
+        <div class="donut-legend">
+          ${data.map(d => `
+            <div class="donut-legend-item">
+              <div class="donut-legend-left">
+                <span class="legend-dot" style="background:${d.color}"></span>
+                <span>${d.label}</span>
+              </div>
+              <span class="donut-legend-val">${Math.round(d.value/total*100)}% · ${fmtShort(d.value)}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  function renderSalesTable() {
+    const sales = STATE.sales.filter(s => inPeriod(s.date, STATE.period));
+    if (sales.length === 0) {
+      return '<div class="empty"><div class="empty-icon">📖</div><div class="empty-title">No sales yet in this period</div><div>Click "+ Sale" or import a CSV from SuperProfile</div></div>';
+    }
+    const sorted = [...sales].sort((a,b) => new Date(b.date) - new Date(a.date));
+    return `
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead><tr><th>Date</th><th>Source</th><th>Qty</th><th>Revenue</th><th>Note</th><th></th></tr></thead>
+          <tbody>${sorted.map(s => {
+            const rev = (s.qty||0) * (s.price || STATE.settings.price);
+            return `<tr>
+              <td>${fmtDate(s.date)}</td>
+              <td><span class="source-tag ${s.source||'other'}">${s.source||'other'}</span></td>
+              <td>${s.qty||0}</td>
+              <td style="color:var(--gold2)">${fmt(rev)}</td>
+              <td style="color:var(--muted)">${s.note ? escapeHtml(s.note.length>40 ? s.note.slice(0,40)+'…' : s.note) : '—'}</td>
+              <td><button class="icon-btn" data-del-sale="${s.id}">×</button></td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>
+      </div>`;
+  }
+
+  function renderSpendTable() {
+    const spend = STATE.spend.filter(s => inPeriod(s.date, STATE.period));
+    if (spend.length === 0) {
+      return '<div class="empty"><div class="empty-icon">💸</div><div class="empty-title">No ad spend logged</div><div>Click "+ Spend" or import Meta CSV from Ads Manager</div></div>';
+    }
+    const sorted = [...spend].sort((a,b) => new Date(b.date) - new Date(a.date));
+    return `
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead><tr><th>Date</th><th>Platform</th><th>Amount</th><th>Campaign</th><th></th></tr></thead>
+          <tbody>${sorted.map(s => `<tr>
+            <td>${fmtDate(s.date)}</td>
+            <td><span class="source-tag meta">${escapeHtml(s.platform||'meta')}</span></td>
+            <td style="color:var(--blue)">${fmt(s.amount||0)}</td>
+            <td style="color:var(--muted)">${s.campaign ? escapeHtml(s.campaign.length>40 ? s.campaign.slice(0,40)+'…' : s.campaign) : '—'}</td>
+            <td><button class="icon-btn" data-del-spend="${s.id}">×</button></td>
+          </tr>`).join('')}</tbody>
+        </table>
+      </div>`;
+  }
+
+  // ---------- Modals ----------
+  function openAddSaleModal() {
+    const bg = document.getElementById('modalBg');
+    bg.innerHTML = `
+      <div class="modal">
+        <div class="modal-title">Record a Sale</div>
+        <div class="modal-sub">Track each book sale with revenue and source</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="lbl">Date</label>
+            <input type="date" id="fDate" class="inp" value="${todayISO()}" />
+          </div>
+          <div class="form-group">
+            <label class="lbl">Source</label>
+            <select id="fSource" class="sel">
+              <option value="meta">Meta Ads</option>
+              <option value="organic">Organic / Topmate</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="lbl">Quantity</label>
+            <input type="number" id="fQty" class="inp" value="1" min="1" />
+          </div>
+          <div class="form-group">
+            <label class="lbl">Price (₹)</label>
+            <input type="number" id="fPrice" class="inp" value="${STATE.settings.price}" min="0" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="lbl">Note</label>
+          <input type="text" id="fNote" class="inp" placeholder="Optional · buyer name, observation" />
+        </div>
+        <div class="modal-actions">
+          <button class="btn" id="mCancel">Cancel</button>
+          <button class="btn primary" id="mSave">Save Sale</button>
+        </div>
+      </div>`;
+    bg.classList.add('show');
+    document.getElementById('mCancel').onclick = closeModal;
+    document.getElementById('mSave').onclick = () => {
+      STATE.sales.push({
+        id: uid('s'),
+        date: document.getElementById('fDate').value,
+        source: document.getElementById('fSource').value,
+        qty: parseInt(document.getElementById('fQty').value) || 1,
+        price: parseFloat(document.getElementById('fPrice').value) || STATE.settings.price,
+        note: document.getElementById('fNote').value || ''
+      });
+      save(); closeModal(); render();
+    };
+  }
+
+  function openAddSpendModal() {
+    const bg = document.getElementById('modalBg');
+    bg.innerHTML = `
+      <div class="modal">
+        <div class="modal-title">Log Ad Spend</div>
+        <div class="modal-sub">Daily ad spend, separate from sales</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="lbl">Date</label>
+            <input type="date" id="fDate" class="inp" value="${todayISO()}" />
+          </div>
+          <div class="form-group">
+            <label class="lbl">Amount (₹)</label>
+            <input type="number" id="fAmount" class="inp" value="0" min="0" step="0.01" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="lbl">Campaign / Ad Set Name</label>
+          <input type="text" id="fCampaign" class="inp" placeholder="Optional" />
+        </div>
+        <div class="modal-actions">
+          <button class="btn" id="mCancel">Cancel</button>
+          <button class="btn blue" id="mSave">Save Spend</button>
+        </div>
+      </div>`;
+    bg.classList.add('show');
+    document.getElementById('mCancel').onclick = closeModal;
+    document.getElementById('mSave').onclick = () => {
+      STATE.spend.push({
+        id: uid('sp'),
+        date: document.getElementById('fDate').value,
+        amount: parseFloat(document.getElementById('fAmount').value) || 0,
+        platform: 'meta',
+        campaign: document.getElementById('fCampaign').value || ''
+      });
+      save(); closeModal(); render();
+    };
+  }
+
+  function openImportModal() {
+    const bg = document.getElementById('modalBg');
+    bg.innerHTML = `
+      <div class="modal">
+        <div class="modal-title">Import Data</div>
+        <div class="modal-sub">Bulk-import sales or ad spend from CSV</div>
+        <div class="modal-tabs">
+          <button class="modal-tab active" data-impt="meta">Meta Ads CSV</button>
+          <button class="modal-tab" data-impt="sales">SuperProfile / Sales</button>
+        </div>
+        <div id="impPanel"></div>
+      </div>`;
+    bg.classList.add('show');
+    const renderTab = (which) => {
+      const panel = document.getElementById('impPanel');
+      bg.querySelectorAll('.modal-tab').forEach(t => t.classList.toggle('active', t.dataset.impt === which));
+      if (which === 'meta') {
+        panel.innerHTML = `
+          <div class="info-strip">
+            <b>How:</b> Meta Ads Manager → set date range → <b>Reports</b> → <b>Export table data</b> → CSV. Use <b>Day</b> breakdown.<br>
+            Recognized columns: <code>Day</code>/<code>Date</code> · <code>Amount Spent (INR)</code> · <code>Campaign Name</code> (optional)
+          </div>
+          <div class="form-group">
+            <label class="lbl">Paste CSV (with header row)</label>
+            <textarea id="fCsv" class="ta" placeholder='Day,Campaign Name,Amount Spent (INR)
+2026-04-27,Modern Mans Edge,450.32
+2026-04-28,Modern Mans Edge,520.10'></textarea>
+          </div>
+          <div class="modal-actions">
+            <button class="btn" id="mCancel">Cancel</button>
+            <button class="btn blue" id="mImport">Import Spend</button>
+          </div>`;
+        document.getElementById('mCancel').onclick = closeModal;
+        document.getElementById('mImport').onclick = () => {
+          const csv = document.getElementById('fCsv').value;
+          const result = parseMetaCsv(csv);
+          if (result.error) { alert('Import failed — ' + result.error); return; }
+          result.rows.forEach(r => {
+            STATE.spend.push({ id: uid('sp'), date: r.date, amount: r.amount, platform: 'meta', campaign: r.campaign || '' });
+          });
+          save(); closeModal(); render();
+          setTimeout(() => alert(`Imported ${result.rows.length} day(s) of spend${result.skipped ? ' · skipped ' + result.skipped + ' invalid rows' : ''}.`), 100);
+        };
+      } else {
+        panel.innerHTML = `
+          <div class="info-strip">
+            <b>Format:</b> One sale per line: <code>YYYY-MM-DD, qty, price, source, note</code><br>
+            Source values: <code>meta</code>, <code>organic</code>, or <code>other</code>.
+          </div>
+          <div class="form-group">
+            <label class="lbl">Paste your data</label>
+            <textarea id="fCsv" class="ta" placeholder="2026-04-28, 1, 999, meta, FB checkout
+2026-04-29, 2, 999, organic, Topmate"></textarea>
+          </div>
+          <div class="modal-actions">
+            <button class="btn" id="mCancel">Cancel</button>
+            <button class="btn primary" id="mImport">Import Sales</button>
+          </div>`;
+        document.getElementById('mCancel').onclick = closeModal;
+        document.getElementById('mImport').onclick = () => {
+          const csv = document.getElementById('fCsv').value;
+          const result = parseSalesCsv(csv);
+          STATE.sales.push(...result.rows);
+          save(); closeModal(); render();
+          setTimeout(() => alert(`Imported ${result.rows.length} sale(s)${result.skipped ? ' · skipped ' + result.skipped + ' invalid rows' : ''}.`), 100);
+        };
+      }
+    };
+    renderTab('meta');
+    bg.querySelectorAll('.modal-tab').forEach(t => t.onclick = () => renderTab(t.dataset.impt));
+  }
+
+  function openShareModal() {
+    const snapshot = JSON.stringify({
+      brand: STATE.settings.brand,
+      exportedAt: new Date().toISOString(),
+      sales: STATE.sales,
+      spend: STATE.spend,
+      settings: STATE.settings
+    }, null, 2);
+    const bg = document.getElementById('modalBg');
+    bg.innerHTML = `
+      <div class="modal">
+        <div class="modal-title">Share &amp; Export</div>
+        <div class="modal-sub">Export to spreadsheet, generate a share link, or push a snapshot to someone</div>
+        <div class="modal-tabs">
+          <button class="modal-tab active" data-share="files">Spreadsheets</button>
+          <button class="modal-tab" data-share="claude">Use with Claude</button>
+          <button class="modal-tab" data-share="url">Share URL</button>
+          <button class="modal-tab" data-share="json">JSON</button>
+          <button class="modal-tab" data-share="import">Import</button>
+        </div>
+        <div id="sharePanel"></div>
+      </div>`;
+    bg.classList.add('show');
+
+    const renderTab = (which) => {
+      const panel = document.getElementById('sharePanel');
+      bg.querySelectorAll('.modal-tab').forEach(t => t.classList.toggle('active', t.dataset.share === which));
+
+      if (which === 'files') {
+        panel.innerHTML = `
+          <div class="info-strip">
+            <b>Excel (.xlsx)</b> includes 4 tabs: Daily Summary, Sales, Ad Spend, Snapshot.<br>
+            <b>CSV files</b> open in Excel, Numbers, Google Sheets, anything. UTF-8 with rupee symbol preserved.
+          </div>
+          <div class="form-group">
+            <label class="lbl">Excel — all data, multi-sheet</label>
+            <button class="btn primary" id="dlExcel" style="width:100%;justify-content:center;padding:12px">⇣ Download Excel (.xlsx)</button>
+          </div>
+          <div class="form-group">
+            <label class="lbl">CSV files (one per ledger)</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+              <button class="btn" id="dlSummary">⇣ Daily Summary</button>
+              <button class="btn" id="dlSales">⇣ Sales</button>
+              <button class="btn" id="dlSpend">⇣ Ad Spend</button>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="btn" id="mCancel">Close</button>
+          </div>`;
+        document.getElementById('mCancel').onclick = closeModal;
+        document.getElementById('dlExcel').onclick = () => exportExcel();
+        document.getElementById('dlSummary').onclick = () => exportSummaryCsv();
+        document.getElementById('dlSales').onclick = () => exportSalesCsv();
+        document.getElementById('dlSpend').onclick = () => exportSpendCsv();
+
+      } else if (which === 'claude') {
+        const isLocal = location.protocol === 'file:';
+        const baseUrl = isLocal ? 'https://YOUR-DASHBOARD.vercel.app' : (location.origin + location.pathname);
+        const promptMerge = `I have a sales dashboard at ${baseUrl}. Use the Meta Ads MCP to fetch my daily ad spend for ad account [YOUR_AD_ACCOUNT_ID] for the last 30 days, then build me a merge URL.
+
+Steps:
+1. Fetch daily spend from Meta MCP, grouped by day.
+2. Build this JSON exactly:
+   {"spend":[{"date":"YYYY-MM-DD","amount":<number>,"platform":"meta","campaign":"<campaign name>"}, ...]}
+3. Base64-encode the JSON using UTF-8-safe encoding (in JS: btoa(unescape(encodeURIComponent(json)))).
+4. Return the final URL: ${baseUrl}#merge=<BASE64>
+
+Just give me the clickable URL — I'll click it to load the data into my dashboard.`;
+        const promptCsv = `Use the Meta Ads MCP to fetch my daily ad spend for ad account [YOUR_AD_ACCOUNT_ID] for the last 30 days. Output a CSV with columns: Day, Amount Spent (INR), Campaign Name. One row per day. No commentary, just the CSV.`;
+
+        panel.innerHTML = `
+          <div class="info-strip" style="line-height:1.6">
+            <b>The setup:</b> Anyone with Meta Ads MCP enabled in Claude can push their data into this dashboard via a special URL — no login, no backend. Two flavors:<br><br>
+            <b>① One-click URL</b> — Claude generates a link. You click. Data merges in. Slick but limited to ~2KB of data (about 60 days of spend).<br>
+            <b>② Paste CSV</b> — Claude prints a CSV. You paste into Import → Meta Ads CSV. Always works, no size limit.
+          </div>
+          ${isLocal ? '<div class="warn-strip"><b>Deploy first:</b> The prompts below assume you have a hosted dashboard URL. Replace <code>YOUR-DASHBOARD.vercel.app</code> with your actual deployed URL.</div>' : ''}
+          <div class="form-group">
+            <label class="lbl">① Prompt for one-click merge URL</label>
+            <textarea id="fPromptMerge" class="ta" readonly style="min-height:180px;font-size:11px">${escapeHtml(promptMerge)}</textarea>
+            <button class="btn" id="mCopyMerge" style="width:100%;justify-content:center;margin-top:8px">⎘ Copy this prompt</button>
+          </div>
+          <div class="form-group">
+            <label class="lbl">② Prompt for CSV (works for any data size)</label>
+            <textarea id="fPromptCsv" class="ta" readonly style="min-height:80px;font-size:11px">${escapeHtml(promptCsv)}</textarea>
+            <button class="btn" id="mCopyCsv" style="width:100%;justify-content:center;margin-top:8px">⎘ Copy this prompt</button>
+          </div>
+          <div class="modal-actions">
+            <button class="btn" id="mCancel">Close</button>
+          </div>`;
+        document.getElementById('mCancel').onclick = closeModal;
+        const copyHandler = (textareaId, btnId, originalLabel) => {
+          document.getElementById(btnId).onclick = () => {
+            const ta = document.getElementById(textareaId);
+            ta.select(); document.execCommand('copy');
+            document.getElementById(btnId).innerText = '✓ Copied';
+            setTimeout(() => { document.getElementById(btnId).innerText = originalLabel; }, 1500);
+          };
+        };
+        copyHandler('fPromptMerge', 'mCopyMerge', '⎘ Copy this prompt');
+        copyHandler('fPromptCsv', 'mCopyCsv', '⎘ Copy this prompt');
+
+      } else if (which === 'url') {
+        const url = encodeShareUrl();
+        const isLocal = location.protocol === 'file:';
+        const len = url.length;
+        const tooLong = len > 8000;
+        panel.innerHTML = `
+          <div class="info-strip">
+            ${isLocal ? '<b>Heads up:</b> You are viewing the dashboard from a local file, so the share URL points to your computer. <b>Deploy to Vercel/Netlify first</b>, then come back to generate a link anyone can open.<br><br>' : ''}
+            The link below contains your full dashboard data baked into the URL itself. Anyone who opens it sees your exact numbers — no backend, no signup. ${len > 4000 ? '<b>Note:</b> URL is ' + (len/1024).toFixed(1) + ' KB. Some apps (WhatsApp, SMS) may truncate long URLs. If that happens, use JSON Snapshot instead.' : 'URL size: ' + (len/1024).toFixed(1) + ' KB.'}
+          </div>
+          ${tooLong ? '<div class="warn-strip"><b>URL is very long (' + (len/1024).toFixed(1) + ' KB).</b> Some platforms will reject it. Use JSON Snapshot tab for large datasets.</div>' : ''}
+          <div class="form-group">
+            <label class="lbl">Shareable URL</label>
+            <textarea id="fShareUrl" class="ta" readonly style="min-height:100px;font-size:11px">${escapeHtml(url)}</textarea>
+          </div>
+          <div class="modal-actions">
+            <button class="btn" id="mCancel">Close</button>
+            <button class="btn primary" id="mCopyUrl">⎘ Copy URL</button>
+          </div>`;
+        document.getElementById('mCancel').onclick = closeModal;
+        document.getElementById('mCopyUrl').onclick = () => {
+          const ta = document.getElementById('fShareUrl');
+          ta.select(); document.execCommand('copy');
+          document.getElementById('mCopyUrl').innerText = '✓ Copied';
+          setTimeout(() => { document.getElementById('mCopyUrl').innerText = '⎘ Copy URL'; }, 1500);
+        };
+
+      } else if (which === 'json') {
+        panel.innerHTML = `
+          <div class="info-strip">
+            JSON snapshot for backups or sending to clients. Recipients paste it into the <b>Import</b> tab.
+          </div>
+          <div class="form-group">
+            <label class="lbl">Snapshot</label>
+            <textarea id="fExport" class="ta" readonly style="min-height:200px;font-size:11px">${escapeHtml(snapshot)}</textarea>
+          </div>
+          <div class="modal-actions">
+            <button class="btn" id="mCancel">Close</button>
+            <button class="btn" id="mDownload">⇣ Download .json</button>
+            <button class="btn primary" id="mCopy">⎘ Copy</button>
+          </div>`;
+        document.getElementById('mCancel').onclick = closeModal;
+        document.getElementById('mCopy').onclick = () => {
+          const ta = document.getElementById('fExport');
+          ta.select(); document.execCommand('copy');
+          document.getElementById('mCopy').innerText = '✓ Copied';
+          setTimeout(() => { document.getElementById('mCopy').innerText = '⎘ Copy'; }, 1500);
+        };
+        document.getElementById('mDownload').onclick = () => {
+          const blob = new Blob([snapshot], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url; a.download = `dashboard-snapshot-${todayISO()}.json`; a.click();
+          URL.revokeObjectURL(url);
+        };
+
+      } else {
+        panel.innerHTML = `
+          <div class="warn-strip">
+            <b>Heads up:</b> Importing replaces your current data. Export a backup first if you want to keep it.
+          </div>
+          <div class="form-group">
+            <label class="lbl">Paste snapshot JSON</label>
+            <textarea id="fImport" class="ta" placeholder="Paste the JSON snapshot here…"></textarea>
+          </div>
+          <div class="modal-actions">
+            <button class="btn" id="mCancel">Cancel</button>
+            <button class="btn primary" id="mImportSnap">Replace my data</button>
+          </div>`;
+        document.getElementById('mCancel').onclick = closeModal;
+        document.getElementById('mImportSnap').onclick = () => {
+          try {
+            const data = JSON.parse(document.getElementById('fImport').value);
+            if (!confirm('Replace all current data with this snapshot? This cannot be undone unless you exported a backup.')) return;
+            STATE.sales = Array.isArray(data.sales) ? data.sales : [];
+            STATE.spend = Array.isArray(data.spend) ? data.spend : [];
+            if (data.settings) STATE.settings = { ...STATE.settings, ...data.settings };
+            save(); closeModal(); render();
+            setTimeout(() => alert(`Imported ${STATE.sales.length} sales and ${STATE.spend.length} spend records.`), 100);
+          } catch(e) {
+            alert('Could not parse JSON. Make sure you copied the entire snapshot.');
+          }
+        };
+      }
+    };
+    renderTab('files');
+    bg.querySelectorAll('.modal-tab').forEach(t => t.onclick = () => renderTab(t.dataset.share));
+  }
+
+  function openSettingsModal() {
+    const bg = document.getElementById('modalBg');
+    bg.innerHTML = `
+      <div class="modal">
+        <div class="modal-title">Settings</div>
+        <div class="modal-sub">Configure brand, pricing, and platform fees</div>
+        <div class="form-group">
+          <label class="lbl">Brand / Product Name</label>
+          <input type="text" id="sBrand" class="inp" value="${escapeHtml(STATE.settings.brand)}" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="lbl">Default Price (₹)</label>
+            <input type="number" id="sPrice" class="inp" value="${STATE.settings.price}" min="0" />
+          </div>
+          <div class="form-group">
+            <label class="lbl">Platform Fee (%)</label>
+            <input type="number" id="sFee" class="inp" value="${STATE.settings.feePercent}" min="0" max="50" step="0.1" />
+          </div>
+        </div>
+        <div class="warn-strip">
+          <b>SuperProfile</b> typically charges ~5% platform fee. Razorpay (their processor) is ~2%. Set this to your effective net cut.
+        </div>
+        <div class="form-group">
+          <label class="lbl" style="color:var(--red)">Danger Zone</label>
+          <button class="btn" id="sReset" style="border-color:#5a3030;color:var(--red);width:100%;justify-content:center">⚠ Erase all sales &amp; spend records</button>
+        </div>
+        <div class="modal-actions">
+          <button class="btn" id="mCancel">Cancel</button>
+          <button class="btn primary" id="mSaveSettings">Save Settings</button>
+        </div>
+      </div>`;
+    bg.classList.add('show');
+    document.getElementById('mCancel').onclick = closeModal;
+    document.getElementById('mSaveSettings').onclick = () => {
+      STATE.settings.brand = document.getElementById('sBrand').value || "The Modern Man's Edge";
+      STATE.settings.price = parseFloat(document.getElementById('sPrice').value) || 999;
+      STATE.settings.feePercent = parseFloat(document.getElementById('sFee').value) || 5;
+      save(); closeModal(); render();
+    };
+    document.getElementById('sReset').onclick = () => {
+      if (confirm('Erase ALL sales and spend records? This cannot be undone.')) {
+        STATE.sales = []; STATE.spend = [];
+        save(); closeModal(); render();
+      }
+    };
+  }
+
+  function closeModal() {
+    const bg = document.getElementById('modalBg');
+    if (bg) { bg.classList.remove('show'); bg.innerHTML = ''; }
+  }
+
+  function attachListeners() {
+    document.querySelectorAll('.tab').forEach(b => b.onclick = () => { STATE.period = b.dataset.period; render(); });
+    document.querySelectorAll('.section-tab').forEach(b => b.onclick = () => { STATE.section = b.dataset.section; render(); });
+    const map = {
+      btnAddSale: openAddSaleModal,
+      btnAddSpend: openAddSpendModal,
+      btnImport: openImportModal,
+      btnShare: openShareModal,
+      btnSettings: openSettingsModal
+    };
+    Object.keys(map).forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.onclick = map[id];
+    });
+    document.querySelectorAll('[data-del-sale]').forEach(b => b.onclick = () => {
+      STATE.sales = STATE.sales.filter(s => s.id !== b.dataset.delSale);
+      save(); render();
+    });
+    document.querySelectorAll('[data-del-spend]').forEach(b => b.onclick = () => {
+      STATE.spend = STATE.spend.filter(s => s.id !== b.dataset.delSpend);
+      save(); render();
+    });
+    const bg = document.getElementById('modalBg');
+    if (bg) bg.onclick = (e) => { if (e.target === bg) closeModal(); };
+  }
+
+  load();
+  checkUrlHash();
+  render();
+})();
+</script>
+</body>
+</html>
