@@ -414,6 +414,95 @@ body { padding: 24px; max-width: 1400px; margin: 0 auto; }
 
 .loading { text-align: center; padding: 40px; color: var(--muted); }
 
+/* Onboarding */
+.onboard-card {
+  background: linear-gradient(135deg, var(--surface) 0%, rgba(201,161,74,0.06) 100%);
+  border: 1px solid var(--gold-dim); border-radius: 16px;
+  padding: 22px 24px; margin-bottom: 24px;
+}
+.onboard-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 18px; gap: 12px; flex-wrap: wrap;
+}
+.onboard-title {
+  font-family: 'Fraunces', serif; font-size: 16px; font-weight: 600;
+  color: var(--gold2); font-style: italic;
+}
+.onboard-dismiss {
+  font-size: 11px; color: var(--muted); background: none; border: none;
+  cursor: pointer; font-family: inherit; text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.onboard-dismiss:hover { color: var(--text); }
+.onboard-steps {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+}
+@media (max-width: 900px) { .onboard-steps { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 500px) { .onboard-steps { grid-template-columns: 1fr; } }
+.onboard-step {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px; display: flex; gap: 12px;
+}
+.onboard-num {
+  width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color: #0b0a08; font-weight: 700; font-size: 12px;
+  display: flex; align-items: center; justify-content: center;
+}
+.onboard-body { flex: 1; }
+.onboard-label {
+  font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 4px;
+}
+.onboard-desc { font-size: 11px; color: var(--muted); line-height: 1.5; }
+.onboard-desc b { color: var(--gold2); font-weight: 600; }
+
+/* Numbered how-to steps inside modals */
+.how-steps { display: flex; flex-direction: column; gap: 10px; margin: 4px 0; }
+.how-step { display: flex; gap: 10px; align-items: flex-start; }
+.how-step-num {
+  width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+  background: var(--gold-dim); color: var(--gold2);
+  font-size: 10px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; margin-top: 1px;
+}
+.how-step-body { flex: 1; font-size: 12px; color: var(--muted); line-height: 1.5; }
+.how-step-body b { color: var(--text); font-weight: 600; }
+.how-step-body code {
+  background: rgba(201,161,74,0.12); color: var(--gold2);
+  padding: 1px 5px; border-radius: 3px;
+  font-family: 'Geist Mono', monospace; font-size: 11px;
+}
+
+/* Code block */
+.code-block {
+  background: #060504; border: 1px solid var(--border2); border-radius: 8px;
+  padding: 10px 14px; font-family: 'Geist Mono', monospace; font-size: 11px;
+  color: var(--gold2); white-space: pre-wrap; word-break: break-all;
+  margin: 8px 0; position: relative;
+}
+.code-copy-btn {
+  position: absolute; top: 6px; right: 8px;
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--muted); font-size: 10px; padding: 3px 7px; border-radius: 4px;
+  cursor: pointer; font-family: inherit;
+}
+.code-copy-btn:hover { color: var(--gold2); border-color: var(--gold-dim); }
+
+/* Sub-tabs (inside modal tabs) */
+.sub-tabs {
+  display: flex; gap: 2px; background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border); border-radius: 7px;
+  padding: 2px; margin-bottom: 14px;
+}
+.sub-tab {
+  flex: 1; padding: 7px 10px; border-radius: 5px; border: none;
+  background: transparent; cursor: pointer; color: var(--muted);
+  font-family: inherit; font-size: 11px; font-weight: 500;
+  text-align: center; transition: all 0.15s; white-space: nowrap;
+}
+.sub-tab.active { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); }
+.sub-tab:hover:not(.active) { color: var(--text); }
+
 @media print {
   body { background: white !important; color: black !important; }
   .actions, .icon-btn, .modal-bg, .footer { display: none !important; }
@@ -901,6 +990,8 @@ body { padding: 24px; max-width: 1400px; margin: 0 auto; }
         </div>
       </div>
 
+      ${STATE.sales.length === 0 && STATE.spend.length === 0 && !localStorage.getItem('tmeDashboard_onboard_dismissed') ? renderOnboarding() : ''}
+
       <div class="metrics">
         <div class="stat hero">
           <div class="stat-label">Net Profit</div>
@@ -1067,10 +1158,50 @@ body { padding: 24px; max-width: 1400px; margin: 0 auto; }
     `;
   }
 
+  function renderOnboarding() {
+    return `
+      <div class="onboard-card" id="onboardCard">
+        <div class="onboard-head">
+          <div class="onboard-title">Welcome — here's how to get started</div>
+          <button class="onboard-dismiss" id="btnDismissOnboard">Got it, hide this</button>
+        </div>
+        <div class="onboard-steps">
+          <div class="onboard-step">
+            <div class="onboard-num">1</div>
+            <div class="onboard-body">
+              <div class="onboard-label">Configure ⚙</div>
+              <div class="onboard-desc">Click <b>⚙ Settings</b> to set your brand name, product price (default ₹999), and platform fee %. Takes 30 seconds.</div>
+            </div>
+          </div>
+          <div class="onboard-step">
+            <div class="onboard-num">2</div>
+            <div class="onboard-body">
+              <div class="onboard-label">Log your first data</div>
+              <div class="onboard-desc">Click <b>+ Sale</b> to record a sale (date, qty, source). Click <b>+ Spend</b> to log today's Meta ad spend amount.</div>
+            </div>
+          </div>
+          <div class="onboard-step">
+            <div class="onboard-num">3</div>
+            <div class="onboard-body">
+              <div class="onboard-label">Bulk import history</div>
+              <div class="onboard-desc">Got past data? Click <b>⇣ Import</b> → <em>Meta Ads CSV</em> to paste weeks of spend at once, or <em>Sales CSV</em> for sales history.</div>
+            </div>
+          </div>
+          <div class="onboard-step">
+            <div class="onboard-num">4</div>
+            <div class="onboard-body">
+              <div class="onboard-label">Automate with Claude 🤖</div>
+              <div class="onboard-desc">Click <b>🤖 Claude</b> to copy a prompt that pushes Meta Ads data straight into this dashboard — no manual export needed.</div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+
   function renderSalesTable() {
     const sales = STATE.sales.filter(s => inPeriod(s.date, STATE.period));
     if (sales.length === 0) {
-      return '<div class="empty"><div class="empty-icon">📖</div><div class="empty-title">No sales yet in this period</div><div>Click "+ Sale" or import a CSV from SuperProfile</div></div>';
+      return `<div class="empty"><div class="empty-icon">📖</div><div class="empty-title">No sales yet in this period</div><div style="margin-bottom:14px">Record each sale as it comes in, or bulk-import from SuperProfile CSV</div><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button class="btn primary" id="emptyAddSale">+ Record a Sale</button><button class="btn" id="emptyImportSales">⇣ Import Sales CSV</button></div></div>`;
     }
     const sorted = [...sales].sort((a,b) => new Date(b.date) - new Date(a.date));
     return `
@@ -1095,7 +1226,7 @@ body { padding: 24px; max-width: 1400px; margin: 0 auto; }
   function renderSpendTable() {
     const spend = STATE.spend.filter(s => inPeriod(s.date, STATE.period));
     if (spend.length === 0) {
-      return '<div class="empty"><div class="empty-icon">💸</div><div class="empty-title">No ad spend logged</div><div>Click "+ Spend" or import Meta CSV from Ads Manager</div></div>';
+      return `<div class="empty"><div class="empty-icon">💸</div><div class="empty-title">No ad spend logged yet</div><div style="margin-bottom:14px">Log today's Meta spend manually, or import weeks of history from Ads Manager in one paste</div><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button class="btn blue" id="emptyAddSpend">+ Log Ad Spend</button><button class="btn" id="emptyImportSpend">⇣ Import Meta CSV</button></div></div>`;
     }
     const sorted = [...spend].sort((a,b) => new Date(b.date) - new Date(a.date));
     return `
@@ -1207,15 +1338,16 @@ body { padding: 24px; max-width: 1400px; margin: 0 auto; }
     };
   }
 
-  function openImportModal() {
+  function openImportModal(initialTab = 'meta') {
     const bg = document.getElementById('modalBg');
+    // All user-supplied values rendered below pass through escapeHtml() — no XSS risk
     bg.innerHTML = `
       <div class="modal">
         <div class="modal-title">Import Data</div>
-        <div class="modal-sub">Bulk-import sales or ad spend from CSV</div>
+        <div class="modal-sub">Bulk-import ad spend or sales from CSV</div>
         <div class="modal-tabs">
-          <button class="modal-tab active" data-impt="meta">Meta Ads CSV</button>
-          <button class="modal-tab" data-impt="sales">SuperProfile / Sales</button>
+          <button class="modal-tab" data-impt="meta">Meta Ads CSV</button>
+          <button class="modal-tab" data-impt="sales">Sales CSV</button>
         </div>
         <div id="impPanel"></div>
       </div>`;
@@ -1226,14 +1358,21 @@ body { padding: 24px; max-width: 1400px; margin: 0 auto; }
       if (which === 'meta') {
         panel.innerHTML = `
           <div class="info-strip">
-            <b>How:</b> Meta Ads Manager → set date range → <b>Reports</b> → <b>Export table data</b> → CSV. Use <b>Day</b> breakdown.<br>
-            Recognized columns: <code>Day</code>/<code>Date</code> · <code>Amount Spent (INR)</code> · <code>Campaign Name</code> (optional)
+            <b>How to export from Meta Ads Manager</b>
+            <div class="how-steps" style="margin-top:8px">
+              <div class="how-step"><div class="how-step-num">1</div><div class="how-step-body">Open <b>Meta Ads Manager</b> and select your ad account from the top-left dropdown</div></div>
+              <div class="how-step"><div class="how-step-num">2</div><div class="how-step-body">Set the <b>date range</b> (top-right calendar) to the period you want to import</div></div>
+              <div class="how-step"><div class="how-step-num">3</div><div class="how-step-body">Click <b>Reports</b> (top right) → <b>Export table data</b> → select <b>CSV</b></div></div>
+              <div class="how-step"><div class="how-step-num">4</div><div class="how-step-body">Ensure <b>Breakdown &rarr; Time &rarr; Day</b> is on — one row per day is required</div></div>
+              <div class="how-step"><div class="how-step-num">5</div><div class="how-step-body">Open the file, select all, copy, and paste into the box below</div></div>
+            </div>
+            <div style="margin-top:8px;font-size:11px">Recognised columns: <code>Day</code> / <code>Date</code> &nbsp;&middot;&nbsp; <code>Amount Spent (INR)</code> &nbsp;&middot;&nbsp; <code>Campaign Name</code> (optional)</div>
           </div>
           <div class="form-group">
-            <label class="lbl">Paste CSV (with header row)</label>
-            <textarea id="fCsv" class="ta" placeholder='Day,Campaign Name,Amount Spent (INR)
+            <label class="lbl">Paste CSV here (include the header row)</label>
+            <textarea id="fCsv" class="ta" style="min-height:110px" placeholder="Day,Campaign Name,Amount Spent (INR)
 2026-04-27,Modern Mans Edge,450.32
-2026-04-28,Modern Mans Edge,520.10'></textarea>
+2026-04-28,Modern Mans Edge,520.10"></textarea>
           </div>
           <div class="modal-actions">
             <button class="btn" id="mCancel">Cancel</button>
@@ -1245,7 +1384,9 @@ body { padding: 24px; max-width: 1400px; margin: 0 auto; }
           const result = parseMetaCsv(csv);
           if (result.error) { alert('Import failed — ' + result.error); return; }
           result.rows.forEach(r => {
-            STATE.spend.push({ id: uid('sp'), date: r.date, amount: r.amount, platform: 'meta', campaign: r.campaign || '' });
+            const existing = STATE.spend.findIndex(e => e.date === r.date && (e.platform||'meta') === 'meta');
+            const rec = { id: uid('sp'), date: r.date, amount: r.amount, platform: 'meta', campaign: r.campaign || '' };
+            if (existing >= 0) STATE.spend[existing] = rec; else STATE.spend.push(rec);
           });
           save(); closeModal(); render();
           setTimeout(() => alert(`Imported ${result.rows.length} day(s) of spend${result.skipped ? ' · skipped ' + result.skipped + ' invalid rows' : ''}.`), 100);
@@ -1253,13 +1394,14 @@ body { padding: 24px; max-width: 1400px; margin: 0 auto; }
       } else {
         panel.innerHTML = `
           <div class="info-strip">
-            <b>Format:</b> One sale per line: <code>YYYY-MM-DD, qty, price, source, note</code><br>
-            Source values: <code>meta</code>, <code>organic</code>, or <code>other</code>.
+            <b>Format:</b> one sale per line &mdash; <code>YYYY-MM-DD, qty, price, source, note</code><br>
+            <div style="margin-top:6px">Source: <code>meta</code> &nbsp;&middot;&nbsp; <code>organic</code> &nbsp;&middot;&nbsp; <code>other</code> &nbsp;&nbsp;|&nbsp;&nbsp; Price and note are optional (uses Settings default).</div>
           </div>
           <div class="form-group">
-            <label class="lbl">Paste your data</label>
-            <textarea id="fCsv" class="ta" placeholder="2026-04-28, 1, 999, meta, FB checkout
-2026-04-29, 2, 999, organic, Topmate"></textarea>
+            <label class="lbl">Paste sales — one per line</label>
+            <textarea id="fCsv" class="ta" style="min-height:110px" placeholder="2026-04-28, 1, 999, meta, FB checkout
+2026-04-29, 2, 999, organic, Topmate
+2026-04-30, 1, , other"></textarea>
           </div>
           <div class="modal-actions">
             <button class="btn" id="mCancel">Cancel</button>
@@ -1275,7 +1417,7 @@ body { padding: 24px; max-width: 1400px; margin: 0 auto; }
         };
       }
     };
-    renderTab('meta');
+    renderTab(initialTab);
     bg.querySelectorAll('.modal-tab').forEach(t => t.onclick = () => renderTab(t.dataset.impt));
   }
 
@@ -1343,43 +1485,111 @@ Steps:
 1. Fetch daily spend from Meta MCP, grouped by day.
 2. Build this JSON exactly:
    {"spend":[{"date":"YYYY-MM-DD","amount":<number>,"platform":"meta","campaign":"<campaign name>"}, ...]}
-3. Base64-encode the JSON using UTF-8-safe encoding (in JS: btoa(unescape(encodeURIComponent(json)))).
-4. Return the final URL: ${baseUrl}#merge=<BASE64>
+3. Base64-encode the JSON: btoa(unescape(encodeURIComponent(json)))
+4. Return ONLY the final URL: ${baseUrl}#merge=<BASE64>
 
-Just give me the clickable URL — I'll click it to load the data into my dashboard.`;
-        const promptCsv = `Use the Meta Ads MCP to fetch my daily ad spend for ad account [YOUR_AD_ACCOUNT_ID] for the last 30 days. Output a CSV with columns: Day, Amount Spent (INR), Campaign Name. One row per day. No commentary, just the CSV.`;
+Just give me the clickable URL — I will click it to load the data into my dashboard.`;
+        const promptCsv = `Use the Meta Ads MCP to fetch my daily ad spend for ad account [YOUR_AD_ACCOUNT_ID] for the last 30 days. Output a CSV with columns: Day, Amount Spent (INR), Campaign Name. One row per day. No commentary — just the CSV.`;
+
+        const renderClaudeTab = (sub) => {
+          const claudePanel = document.getElementById('claudeSubPanel');
+          document.querySelectorAll('.sub-tab').forEach(t => t.classList.toggle('active', t.dataset.sub === sub));
+          if (sub === 'manual') {
+            claudePanel.innerHTML = `
+              <div class="warn-strip" style="margin-bottom:12px">
+                <b>No MCP needed</b> — two manual methods to get your Meta spend data in.
+              </div>
+              <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:8px">Method A &mdash; Export CSV from Meta Ads Manager</div>
+              <div class="how-steps" style="margin-bottom:14px">
+                <div class="how-step"><div class="how-step-num">1</div><div class="how-step-body">Go to <b>Meta Ads Manager</b> → pick your ad account (top-left)</div></div>
+                <div class="how-step"><div class="how-step-num">2</div><div class="how-step-body">Set the <b>date range</b> you want (top-right calendar)</div></div>
+                <div class="how-step"><div class="how-step-num">3</div><div class="how-step-body">Click <b>Reports → Export table data → CSV</b>. Enable <b>Breakdown → Time → Day</b></div></div>
+                <div class="how-step"><div class="how-step-num">4</div><div class="how-step-body">Come back here → click <b>⇣ Import → Meta Ads CSV</b> → paste the file contents</div></div>
+              </div>
+              <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:8px">Method B &mdash; Log spend daily (30 sec/day)</div>
+              <div class="how-steps">
+                <div class="how-step"><div class="how-step-num">1</div><div class="how-step-body">Each evening, check today's spend in Meta Ads Manager (it shows on the dashboard home)</div></div>
+                <div class="how-step"><div class="how-step-num">2</div><div class="how-step-body">Click <b>+ Spend</b> above, enter the date and the amount, click Save</div></div>
+                <div class="how-step"><div class="how-step-num">3</div><div class="how-step-body">Repeat for sales: click <b>+ Sale</b> each time a SuperProfile / Topmate order comes in</div></div>
+              </div>`;
+          } else if (sub === 'setup') {
+            claudePanel.innerHTML = `
+              <div class="info-strip" style="margin-bottom:12px">
+                Meta MCP gives Claude direct API access to your Ads account — no manual export ever again.
+              </div>
+              <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:8px">Step 1 &mdash; Get a Meta Access Token</div>
+              <div class="how-steps" style="margin-bottom:14px">
+                <div class="how-step"><div class="how-step-num">1</div><div class="how-step-body">Go to <b>Meta for Developers</b> (developers.facebook.com) → My Apps → create or open an app</div></div>
+                <div class="how-step"><div class="how-step-num">2</div><div class="how-step-body">Click <b>Tools → Graph API Explorer</b> → click <b>Generate Access Token</b></div></div>
+                <div class="how-step"><div class="how-step-num">3</div><div class="how-step-body">Add permissions: <code>ads_read</code>, <code>ads_management</code>, <code>business_management</code> → Generate</div></div>
+                <div class="how-step"><div class="how-step-num">4</div><div class="how-step-body">Copy the token — keep it secret, treat it like a password</div></div>
+              </div>
+              <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:8px">Step 2 &mdash; Find your Ad Account ID</div>
+              <div class="how-steps" style="margin-bottom:14px">
+                <div class="how-step"><div class="how-step-num">1</div><div class="how-step-body">Open <b>Meta Ads Manager</b> in your browser</div></div>
+                <div class="how-step"><div class="how-step-num">2</div><div class="how-step-body">Look at the URL — it contains <code>act_XXXXXXXXX</code>. The digits after <code>act_</code> are your account ID</div></div>
+              </div>
+              <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:8px">Step 3 &mdash; Add Meta MCP to Claude Code</div>
+              <div class="how-steps" style="margin-bottom:10px">
+                <div class="how-step"><div class="how-step-num">1</div><div class="how-step-body">Open your terminal and run the command below (replace the token value)</div></div>
+              </div>
+              <div class="code-block" id="mcpCmd">claude mcp add meta-ads -- env FACEBOOK_ACCESS_TOKEN=YOUR_TOKEN_HERE npx -y @anthropic/meta-mcp<button class="code-copy-btn" id="btnCopyMcpCmd">Copy</button></div>
+              <div class="how-steps" style="margin-bottom:14px">
+                <div class="how-step"><div class="how-step-num">2</div><div class="how-step-body">Restart Claude Code. Ask it: <em>"List my Meta ad accounts"</em> — if you see account names, the MCP is working</div></div>
+                <div class="how-step"><div class="how-step-num">3</div><div class="how-step-body">Switch to the <b>Merge URL</b> tab, copy the prompt, paste it into Claude Code with your account ID filled in</div></div>
+              </div>
+              <div class="info-strip" style="font-size:11px">
+                <b>Alternative — Claude.ai web:</b> Settings → Integrations → search for Meta Ads → Connect → authorise with your Meta Business account. No terminal needed.
+              </div>`;
+            document.getElementById('btnCopyMcpCmd').onclick = (e) => {
+              e.stopPropagation();
+              const cmd = 'claude mcp add meta-ads -- env FACEBOOK_ACCESS_TOKEN=YOUR_TOKEN_HERE npx -y @anthropic/meta-mcp';
+              navigator.clipboard ? navigator.clipboard.writeText(cmd) : (() => { const ta = document.createElement('textarea'); ta.value = cmd; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); })();
+              document.getElementById('btnCopyMcpCmd').innerText = '✓ Copied';
+              setTimeout(() => { const b = document.getElementById('btnCopyMcpCmd'); if (b) b.innerText = 'Copy'; }, 1500);
+            };
+          } else {
+            claudePanel.innerHTML = `
+              ${isLocal ? '<div class="warn-strip"><b>Heads up:</b> You are viewing locally. Replace <code>ads-dashboard-lilac.vercel.app</code> with your deployed URL in the prompt.</div>' : ''}
+              <div class="info-strip" style="margin-bottom:12px">
+                Paste either prompt into Claude (with Meta MCP active). <b>Merge URL</b> gives you a one-click link; <b>CSV</b> works for any data size.
+              </div>
+              <div class="form-group">
+                <label class="lbl">① One-click merge URL prompt (up to ~60 days)</label>
+                <textarea id="fPromptMerge" class="ta" readonly style="min-height:160px;font-size:11px">${escapeHtml(promptMerge)}</textarea>
+                <button class="btn" id="mCopyMerge" style="width:100%;justify-content:center;margin-top:8px">⎘ Copy prompt</button>
+              </div>
+              <div class="form-group">
+                <label class="lbl">② CSV prompt (no size limit)</label>
+                <textarea id="fPromptCsv" class="ta" readonly style="min-height:70px;font-size:11px">${escapeHtml(promptCsv)}</textarea>
+                <button class="btn" id="mCopyCsv" style="width:100%;justify-content:center;margin-top:8px">⎘ Copy prompt</button>
+              </div>`;
+            const copyHandler = (taId, btnId, label) => {
+              document.getElementById(btnId).onclick = () => {
+                const ta = document.getElementById(taId);
+                ta.select(); document.execCommand('copy');
+                document.getElementById(btnId).innerText = '✓ Copied';
+                setTimeout(() => { const b = document.getElementById(btnId); if(b) b.innerText = label; }, 1500);
+              };
+            };
+            copyHandler('fPromptMerge', 'mCopyMerge', '⎘ Copy prompt');
+            copyHandler('fPromptCsv', 'mCopyCsv', '⎘ Copy prompt');
+          }
+        };
 
         panel.innerHTML = `
-          <div class="info-strip" style="line-height:1.6">
-            <b>The setup:</b> Anyone with Meta Ads MCP enabled in Claude can push their data into this dashboard via a special URL — no login, no backend. Two flavors:<br><br>
-            <b>① One-click URL</b> — Claude generates a link. You click. Data merges in. Slick but limited to ~2KB of data (about 60 days of spend).<br>
-            <b>② Paste CSV</b> — Claude prints a CSV. You paste into Import → Meta Ads CSV. Always works, no size limit.
+          <div class="sub-tabs">
+            <button class="sub-tab" data-sub="manual">① No MCP — Manual</button>
+            <button class="sub-tab" data-sub="setup">② Setup Meta MCP</button>
+            <button class="sub-tab" data-sub="prompt">③ Merge URL prompt</button>
           </div>
-          ${isLocal ? '<div class="warn-strip"><b>Deploy first:</b> The prompts below assume you have a hosted dashboard URL. Replace <code>ads-dashboard-lilac.vercel.app</code> with your actual deployed URL.</div>' : ''}
-          <div class="form-group">
-            <label class="lbl">① Prompt for one-click merge URL</label>
-            <textarea id="fPromptMerge" class="ta" readonly style="min-height:180px;font-size:11px">${escapeHtml(promptMerge)}</textarea>
-            <button class="btn" id="mCopyMerge" style="width:100%;justify-content:center;margin-top:8px">⎘ Copy this prompt</button>
-          </div>
-          <div class="form-group">
-            <label class="lbl">② Prompt for CSV (works for any data size)</label>
-            <textarea id="fPromptCsv" class="ta" readonly style="min-height:80px;font-size:11px">${escapeHtml(promptCsv)}</textarea>
-            <button class="btn" id="mCopyCsv" style="width:100%;justify-content:center;margin-top:8px">⎘ Copy this prompt</button>
-          </div>
-          <div class="modal-actions">
+          <div id="claudeSubPanel"></div>
+          <div class="modal-actions" style="margin-top:16px">
             <button class="btn" id="mCancel">Close</button>
           </div>`;
         document.getElementById('mCancel').onclick = closeModal;
-        const copyHandler = (textareaId, btnId, originalLabel) => {
-          document.getElementById(btnId).onclick = () => {
-            const ta = document.getElementById(textareaId);
-            ta.select(); document.execCommand('copy');
-            document.getElementById(btnId).innerText = '✓ Copied';
-            setTimeout(() => { document.getElementById(btnId).innerText = originalLabel; }, 1500);
-          };
-        };
-        copyHandler('fPromptMerge', 'mCopyMerge', '⎘ Copy this prompt');
-        copyHandler('fPromptCsv', 'mCopyCsv', '⎘ Copy this prompt');
+        document.querySelectorAll('.sub-tab').forEach(t => t.onclick = () => renderClaudeTab(t.dataset.sub));
+        renderClaudeTab('manual');
 
       } else if (which === 'url') {
         const url = encodeShareUrl();
@@ -1548,6 +1758,15 @@ Just give me the clickable URL — I'll click it to load the data into my dashbo
     });
     const bg = document.getElementById('modalBg');
     if (bg) bg.onclick = (e) => { if (e.target === bg) closeModal(); };
+    const emptyBtns = {
+      emptyAddSale: openAddSaleModal,
+      emptyImportSales: () => openImportModal('sales'),
+      emptyAddSpend: openAddSpendModal,
+      emptyImportSpend: () => openImportModal('meta'),
+    };
+    Object.keys(emptyBtns).forEach(id => { const el = document.getElementById(id); if (el) el.onclick = emptyBtns[id]; });
+    const dismissBtn = document.getElementById('btnDismissOnboard');
+    if (dismissBtn) dismissBtn.onclick = () => { localStorage.setItem('tmeDashboard_onboard_dismissed', '1'); render(); };
   }
 
   load();
