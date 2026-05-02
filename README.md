@@ -50,7 +50,7 @@ Inside the dashboard, click **⇪ Share → Use with Claude** to copy the exact 
 The merge URL format is:
 
 ```
-https://your-dashboard.vercel.app/#merge=<BASE64_ENCODED_JSON>
+https://ads-dashboard-lilac.vercel.app/#merge=<BASE64_ENCODED_JSON>
 ```
 
 Where the JSON is:

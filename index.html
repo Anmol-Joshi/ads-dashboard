@@ -1335,7 +1335,7 @@ body { padding: 24px; max-width: 1400px; margin: 0 auto; }
 
       } else if (which === 'claude') {
         const isLocal = location.protocol === 'file:';
-        const baseUrl = isLocal ? 'https://YOUR-DASHBOARD.vercel.app' : (location.origin + location.pathname);
+        const baseUrl = isLocal ? 'https://ads-dashboard-lilac.vercel.app' : (location.origin + location.pathname);
         const promptMerge = `I have a sales dashboard at ${baseUrl}. Use the Meta Ads MCP to fetch my daily ad spend for ad account [YOUR_AD_ACCOUNT_ID] for the last 30 days, then build me a merge URL.
 
 Steps:
@@ -1354,7 +1354,7 @@ Just give me the clickable URL — I'll click it to load the data into my dashbo
             <b>① One-click URL</b> — Claude generates a link. You click. Data merges in. Slick but limited to ~2KB of data (about 60 days of spend).<br>
             <b>② Paste CSV</b> — Claude prints a CSV. You paste into Import → Meta Ads CSV. Always works, no size limit.
           </div>
-          ${isLocal ? '<div class="warn-strip"><b>Deploy first:</b> The prompts below assume you have a hosted dashboard URL. Replace <code>YOUR-DASHBOARD.vercel.app</code> with your actual deployed URL.</div>' : ''}
+          ${isLocal ? '<div class="warn-strip"><b>Deploy first:</b> The prompts below assume you have a hosted dashboard URL. Replace <code>ads-dashboard-lilac.vercel.app</code> with your actual deployed URL.</div>' : ''}
           <div class="form-group">
             <label class="lbl">① Prompt for one-click merge URL</label>
             <textarea id="fPromptMerge" class="ta" readonly style="min-height:180px;font-size:11px">${escapeHtml(promptMerge)}</textarea>
