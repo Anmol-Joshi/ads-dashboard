@@ -893,6 +893,7 @@ body { padding: 24px; max-width: 1400px; margin: 0 auto; }
         </div>
         <div class="actions">
           <button class="btn" id="btnShare">⇪ Share</button>
+          <button class="btn" id="btnClaude" style="color:var(--gold);border-color:var(--gold-dim)">🤖 Claude</button>
           <button class="btn" id="btnImport">⇣ Import</button>
           <button class="btn" id="btnSettings">⚙</button>
           <button class="btn blue" id="btnAddSpend">+ Spend</button>
@@ -1278,7 +1279,7 @@ body { padding: 24px; max-width: 1400px; margin: 0 auto; }
     bg.querySelectorAll('.modal-tab').forEach(t => t.onclick = () => renderTab(t.dataset.impt));
   }
 
-  function openShareModal() {
+  function openShareModal(initialTab = 'files') {
     const snapshot = JSON.stringify({
       brand: STATE.settings.brand,
       exportedAt: new Date().toISOString(),
@@ -1465,7 +1466,7 @@ Just give me the clickable URL — I'll click it to load the data into my dashbo
         };
       }
     };
-    renderTab('files');
+    renderTab(initialTab);
     bg.querySelectorAll('.modal-tab').forEach(t => t.onclick = () => renderTab(t.dataset.share));
   }
 
@@ -1530,6 +1531,7 @@ Just give me the clickable URL — I'll click it to load the data into my dashbo
       btnAddSpend: openAddSpendModal,
       btnImport: openImportModal,
       btnShare: openShareModal,
+      btnClaude: () => openShareModal('claude'),
       btnSettings: openSettingsModal
     };
     Object.keys(map).forEach(id => {
